@@ -1,0 +1,6 @@
+module Pods_Reactive_ReactiveTests {
+  umbrella header "Pods-Reactive-ReactiveTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
