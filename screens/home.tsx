@@ -17,15 +17,20 @@ export function Home() {
   const navigation = useNavigation<DetailsNavigationProp>();
   const {state, dispatch} = useContext(TodosContext);
   const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
     getTodos().then(todos => {
       dispatch({
         type: TodoActionTypes.Reset,
-        payload: todos,
+        payload: sortTodos(todos),
       });
     });
   }, [dispatch]);
+
+  useEffect(() => {
+    setTodos(sortTodos(state.todos));
+  }, [state.todos]);
 
   function sortTodos(todos: Todo[]) {
     return todos.sort(t => t.id).sort(t => (t.completed ? 1 : -1));
@@ -60,7 +65,7 @@ export function Home() {
       />
 
       <FlatList
-        data={sortTodos(state.todos)}
+        data={todos}
         renderItem={({item}) => (
           <TouchableOpacity
             onPress={() => {
