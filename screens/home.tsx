@@ -3,12 +3,12 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, Text, TextInput, TouchableHighlight, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {RootStackParamList} from '../App';
 import {Todo, TodosContext} from '../contexts/todos-context';
 import {TodoActionTypes} from '../reducers/todos-reducer';
-import {getTodos} from '../services/todos';
+import {getTodos} from '../services/todosApi';
 import {styles} from '../styles/home';
 import {DetailsNavigationProp} from './details';
+import {RootStackParamList} from '../navigators/stack-nav';
 
 export type HomeNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 export type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -20,10 +20,10 @@ export function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
-    getTodos().then(todos => {
+    getTodos().then(todosData => {
       dispatch({
         type: TodoActionTypes.Reset,
-        payload: sortTodos(todos),
+        payload: sortTodos(todosData),
       });
     });
   }, [dispatch]);
@@ -32,8 +32,8 @@ export function Home() {
     setTodos(sortTodos(state.todos));
   }, [state.todos]);
 
-  function sortTodos(todos: Todo[]) {
-    return todos.sort(t => t.id).sort(t => (t.completed ? 1 : -1));
+  function sortTodos(todosData: Todo[]) {
+    return todosData.sort(t => t.id).sort(t => (t.completed ? 1 : -1));
   }
 
   function handleCreate() {

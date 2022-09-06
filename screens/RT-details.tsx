@@ -1,30 +1,27 @@
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {TodosContext} from '../contexts/todos-context';
-import {TodoActionTypes} from '../reducers/todos-reducer';
 import {styles} from '../styles/details';
-import {HomeNavigationProp} from './home';
-import {RootStackParamList} from '../navigators/stack-nav';
+import {RTRootStackParamList} from '../navigators/stack-nav';
+import {useDispatch} from 'react-redux';
+import {RTHomeNavigationProp} from './RT-home';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {destroy, update} from '../redux/features/todosSlice';
 
-export type DetailsNavigationProp = StackNavigationProp<RootStackParamList, 'Details'>;
-export type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
+export type RTDetailsScreenRouteProp = RouteProp<RTRootStackParamList, 'RTDetails'>;
+export type RTDetailsNavigationProp = StackNavigationProp<RTRootStackParamList, 'RTDetails'>;
 
-export function Details() {
-  const route = useRoute<DetailsScreenRouteProp>();
+export function RTDetails() {
+  const route = useRoute<RTDetailsScreenRouteProp>();
   const [todo, setTodo] = useState({...route.params.todo});
   const [editing, setEditing] = useState(false);
   const [updatedTodo, setUpdatedTodo] = useState(todo);
-  const {dispatch} = useContext(TodosContext);
-  const navigation = useNavigation<HomeNavigationProp>();
+  const dispatch = useDispatch();
+  const navigation = useNavigation<RTHomeNavigationProp>();
 
   function handleUpdate() {
-    dispatch({
-      type: TodoActionTypes.Update,
-      payload: updatedTodo,
-    });
+    dispatch(update(updatedTodo));
     setEditing(false);
     setTodo(updatedTodo);
   }
@@ -61,10 +58,7 @@ export function Details() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => {
-          dispatch({
-            type: TodoActionTypes.Delete,
-            payload: todo,
-          });
+          dispatch(destroy(todo));
           navigation.goBack();
         }}>
         <Icon name="remove" color={'white'} size={20} />

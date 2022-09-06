@@ -41,4 +41,9 @@ export const styles = StyleSheet.create({
   completedToggleIcon: {
     color: 'ghostwhite',
   },
+  wrapper: {
+    textAlign: 'center',
+    color: 'maroon',
+    fontSize: 18,
+  },
 });
