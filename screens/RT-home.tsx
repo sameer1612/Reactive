@@ -1,12 +1,10 @@
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {FlatList, Text, TextInput, TouchableHighlight, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useDispatch, useSelector} from 'react-redux';
 import {RTRootStackParamList} from '../navigators/stack-nav';
-import {create, fetchTodos, update} from '../redux/features/todosSlice';
-import {AppDispatch, RootState} from '../redux/store';
+import {useCreateTodoMutation, useGetTodosQuery, useUpdateTodoMutation} from '../services/todosRtk';
 import {styles} from '../styles/home';
 import {RTDetailsNavigationProp} from './RT-details';
 
@@ -17,22 +15,19 @@ export function RTHome() {
   const navigation = useNavigation<RTDetailsNavigationProp>();
   const [newTodoTitle, setNewTodoTitle] = useState('');
 
-  const {todos, loading} = useSelector((state: RootState) => state.todos);
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(fetchTodos());
-  }, [dispatch]);
+  const {data: todos = [], isLoading} = useGetTodosQuery();
+  const [createTodo] = useCreateTodoMutation();
+  const [updateTodo] = useUpdateTodoMutation();
 
   function handleCreate() {
-    dispatch(
-      create({
-        id: todos.length + 1,
-        userId: todos.length + 1,
-        title: newTodoTitle,
-        completed: false,
-      }),
-    );
+    const todo = {
+      id: todos.length + 1,
+      userId: todos.length + 1,
+      title: newTodoTitle,
+      completed: false,
+    };
+
+    createTodo(todo);
 
     setNewTodoTitle('');
   }
@@ -44,7 +39,7 @@ export function RTHome() {
   function TodosList() {
     return (
       <>
-        {loading ? (
+        {isLoading ? (
           <Text style={styles.wrapper}>{'Loading...'}</Text>
         ) : (
           <FlatList
@@ -60,7 +55,7 @@ export function RTHome() {
                     underlayColor={'salmon'}
                     style={styles.doneBtn}
                     onPress={() => {
-                      dispatch(update({...item, completed: true}));
+                      updateTodo({...item, completed: !item.completed});
                     }}>
                     {item.completed ? (
                       <Icon name="times" style={styles.completedToggleIcon} />

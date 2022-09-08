@@ -38,9 +38,9 @@
     },
     {
       "userId": 1,
-      "id": 7,
       "title": "illo expedita consequatur quia in",
-      "completed": false
+      "completed": true,
+      "id": 7
     },
     {
       "userId": 1,
